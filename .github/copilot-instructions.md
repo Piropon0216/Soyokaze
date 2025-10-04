@@ -11,50 +11,49 @@ FinTech 向け AgenticRAG / NL→分析 プラットフォームでの一貫し�
 | Testing | `instructions/testing.instructions.md` | テストピラミッド / カバレッジ戦略 |
 | Coding Policy | `instructions/backend-coding-policy.instructions.md` | スタイル / 依存 / 例外規約 |
 | Naming | `instructions/backend-naming-convention.instructions.md` | 指標/DSL/ファイル命名規約 |
+| Soyokaze Dev | `instructions/soyokaze-development.instructions.md` | フォーク個人開発ガイド (TDD/Changelog最小) |
 | Agents Context | `../AGENTS/AGENTS.md` | エージェント一覧 / 協調ルール |
 
-## CLEAR OVERVIEW
+## CLEAR OVERVIEW (Soyokaze Fork)
 ### C (Concise) 要求の核心
-金融ドメインの自然言語要求を セキュア / 冪等 / 追跡可能 な分析結果 (指標+特徴量+可視化) へ高速変換する統合ルールを提供する。
+キーワード入力からアプリ/URL/スニペット/内部処理を最小ステップ・低レイテンシで安定実行し、個人拡張（銘柄コード変換等）を安全に追加できる指針を提供する。
 
 ### L (Logical) ロジック構造
-1. 入力検証 (NL 正規化, ドメイン語彙マッピング)
-2. プラン生成 (DSL) → バリデーション (命名/期間/メトリク衝突)
-3. エージェント並列実行 (マーケットデータ, 特徴量, スコアリング)
-4. 結果統合 (型安全 + degraded 記録) → 可視化モデル変換
-5. 監視 (ログ/メトリク/トレース) & コスト/品質フィードバック
+1. 入力正規化: 大文字小文字 / 全角半角 / トリム / エイリアス展開
+2. マッチング優先順位: 完全一致 > エイリアス > 部分一致 > 正規表現
+3. コマンド解決: 種別判定 (内部処理 / ShellExecute / URL生成 / スニペット展開)
+4. 実行フェーズ: 存在/引数検証 → 実行 → 失敗時フォールバック (履歴へ記録)
+5. フィードバック: 利用履歴/頻度 (将来優先度調整) + Debug ログ
 
 ### E (Explicit) 明示的ルール TOP 10
-1. CHANGELOG FIRST (全機能/仕様変更) 事前ドラフト必須
-2. TDD / Coverage Gate: 重要モジュール 100%, 全体 >=85%
-3. 破壊的変更は `Impact` 明記 + metrics alias migration 方針
-4. Azure 資源変更: Bicep what-if 差分レビュー通過なしでデプロイ禁止
-5. Secrets/Keys をコード/設定直書き禁止 (Managed Identity 前提, 将来 Key Vault)
-6. エージェント間の直接依存禁止 (オーケストレーター経由)
-7. ログは構造化 JSON + correlationId 必須
-8. 関数 or pure transformation 優先 (Class 多用禁止)
-9. 生成物(コード/DSL)は命名規約ファイル準拠 (衝突時 alias)
-10. 30分超のデバッグ / 設計判断は lessons へ 3行以上追記
+1. CHANGELOG FIRST: 変更前に `doc/changelogs/` にドラフト
+2. TDD: 新機能は失敗テスト → 最小実装 → リファクタ
+3. 破壊的変更 (既存コマンド名/挙動変更) は Impact を明示
+4. 外部依存追加時は ライセンス / 目的 / 代替案 を Changelog に記録
+5. 機密/個人情報は直書き禁止 (将来 API キー導入時含む)
+6. 解決ロジック (純粋) と I/O (WinAPI / ShellExecute / ブラウザ) を分離
+7. ログは Debug で詳細・Release は最小 (error / warning 程度)
+8. 早すぎる抽象化禁止 (YAGNI) — 必要性発生まで構造最小を維持
+9. データ表 (例: 銘柄コード) は小規模ハードコード開始 → 拡張時に外部ファイル化
+10. 30分超の調査やバグ解析は 3 行サマリ (lessons 的メモ) を残す
 
-### A (Actionable) 実行指針 (日常フロー)
-1. 要求受領: CLEAR テンプレで Issue 下書き (核心/手順/仕様/成果物/関連)
-2. Red: 期待テスト追加 → Green 実装 → Refactor (重複/副作用除去)
-3. Coverage 計測 & 欠落テスト追加
-4. Changelog 作成 (Context/Change/Impact/Test/Next)
-5. Bicep what-if / Lint / Unit / Integration → すべて green
-6. 単一コミット (ISO8601 prefix + conventional commit) → PR
-7. PR で schema diff / coverage delta チェック
+### A (Actionable) 日常フロー最小
+1. ブランチ作成 (`feat/<topic>`) + Changelog draft
+2. 失敗テスト追加 (例: StockResolverTest)
+3. 最小実装 (ハードコード map 等)
+4. テスト Green → リファクタ (重複/命名整理)
+5. Changelog 追記 (Impact/Test/Next) → ISO8601 付きコミット
+6. develop へ push (上流へ PR しない方針)
 
 ### R (Relevant) プロジェクト文脈
-既存ドキュメントでの設計背景・ルール補強:
-- `docs/PROJECT_OVERVIEW.md` 全体像
-- `docs/agent_handoff_lessons.md` 問題解決知見
-- `docs/plan_nl_stock_query_poc_2025-09-14.md` NL→株式クエリPoc
-- `docs/plan_per_metric_change_pipeline_2025-09-16.md` 特徴量変化率
-- `docs/nl_sql_value_change_semantics.md` change/diff セマンティクス
-- `docs/nl_sql_diff_multi_sort_plan.md` 複合ソート/差分列
+- `doc/RUNBOOK.md`: 利用者向け操作ガイド
+- `HowToBuild.md`: ビルド手順
+- `.github/instructions/soyokaze-development.instructions.md`: 開発原則
+- `doc/changelogs/`: 変更履歴の唯一の正
 
 ---
+Note for this fork: This fork is used for personal/custom development only. Do not create pull requests to the original upstream repository. Project-specific instructions live under `.github/instructions/` and `doc/APPLY_TEMPLATE_GUIDE.md`.
+
 ## CONSOLIDATED KEY RULES (詳細は各専門ファイルへ移管)
 
 ### 1. CHANGELOG & COMMIT DISCIPLINE
