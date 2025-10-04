@@ -878,6 +878,8 @@
     <ClInclude Include="utility\VersionInfo.h" />
     <ClInclude Include="utility\WinHttp.h" />
     <ClInclude Include="utility\WinHttpHandle.h" />
+    <ClInclude Include="commands\stock\StockResolver.h" />
+    <ClInclude Include="commands\stock\SymbolUrlBuilder.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="actions\activate_window\CloseWindowAction.cpp" />
@@ -1343,6 +1345,8 @@
     <ClCompile Include="utility\TopMostMask.cpp" />
     <ClCompile Include="utility\VersionInfo.cpp" />
     <ClCompile Include="utility\WinHttp.cpp" />
+    <ClCompile Include="commands\stock\StockResolver.cpp" />
+    <ClCompile Include="commands\stock\SymbolUrlBuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Soyokaze.rc" />

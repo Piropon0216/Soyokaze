@@ -1,15 +1,16 @@
 // StockResolverTest.cpp
 #include <gtest/gtest.h>
+// StockResolverTest.cpp
+#include <gtest/gtest.h>
+#include "commands/stock/StockResolver.h"
 
-// ...existing code...
-
-// Minimal tests (red -> to be implemented)
 TEST(StockResolverTest, ResolveKnownJapaneseName) {
-    // Expectation: resolve("トヨタ") -> code "7203"
-    // TODO: implement StockResolver and this test
-    FAIL() << "Not implemented: StockResolver::Resolve";
+    auto res = StockResolver::Resolve("トヨタ");
+    ASSERT_TRUE(res.has_value());
+    EXPECT_EQ(res.value(), "7203");
 }
 
 TEST(StockResolverTest, ResolveUnknownName) {
-    FAIL() << "Not implemented: StockResolver::Resolve unknown";
+    auto res = StockResolver::Resolve("UnknownCompanyXYZ");
+    EXPECT_FALSE(res.has_value());
 }
