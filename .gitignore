@@ -23,3 +23,18 @@ doc/manuals/source/image/
 *.doctree
 *.pickle
 
+# Local workspace / editor
+.vscode/
+.idea/
+
+# Chatmode drafts / temp generated chat files (kept out of repo unless intentionally added)
+.github/chatmodes/
+
+# Local agent workspace (optional, contains workspace-level notes)
+AGENTS/
+
+# Build output folders
+dist/
+bin/
+
+
